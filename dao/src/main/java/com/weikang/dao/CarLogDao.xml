@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weikang.dao.CarLogDao">
+
+	<resultMap id="CarLogMap" type="CarLog">
+		<association property="carInto" javaType="CarInto"
+					 column="carIntoId" select="com.weikang.dao.CarIntoDao.queryById"
+					 fetchType="lazy">
+		</association>
+	</resultMap>
+
+	<!-- 查所有 -->
+	<select id="queryAll"  resultMap="CarLogMap">
+		select * from car_log
+	</select>
+
+	<!-- 次数 -->
+	<select id="count" parameterType="int" resultType="int">
+		select count(*) from car_log where carId=#{carId}
+	</select>
+
+	<!-- 根据id查 -->
+	<select id="queryById" parameterType="int" resultMap="CarLogMap">
+		select * from car_log where id=#{id}
+	</select>
+
+	<!-- 根据车查 -->
+	<select id="queryByCarId" resultMap="CarLogMap">
+		select * from car_log where carId=#{id}
+	</select>
+
+	<!-- 根据车查 -->
+	<select id="queryGroupByCarId" parameterType="int" resultMap="CarLogMap">
+		select * from car_log GROUP BY carId
+	</select>
+
+	<!-- 分页 -->
+	<select id="fenYe" parameterType="CarLog" resultMap="CarLogMap">
+		select * from car_log
+	</select>
+	<!-- 条数 -->
+	<select id="fenYeCount" parameterType="CarLog" resultType="int">
+		select count(*) from car_log
+	</select>
+
+	<!-- 添加 -->
+	<insert id="add" parameterType="CarLog">
+        insert into car_log values (null,#{carIntoId},#{carId})
+    </insert>
+
+	<!-- 修改 -->
+	<update id="update" parameterType="CarLog">
+        update car_log set carIntoId=#{carIntoId},carId=#{carId} where id = #{id}
+    </update>
+
+	<!-- 删除 -->
+	<delete id="delete" parameterType="int">
+        delete from car_log where id = #{id}
+    </delete>
+</mapper>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weikang.dao.MenuDao">
+
+    <select id="queryByPidAndNodeType"  resultType="Menu">
+		select * from menu where parentId =#{pid} and nodeType = #{nodeType}
+	</select>
+
+	<!-- 分页 -->
+	<select id="fenYe" parameterType="Menu" resultType="Menu">
+		select * from menu
+		<where>
+			<if test="name != null and name!=''">and name like CONCAT('%',#{name},'%')</if>
+			<if test="parentId != null">and parentId = #{parentId}</if>
+		</where>
+	</select>
+
+	<!-- 条数 -->
+	<select id="fenYeCount" parameterType="Menu" resultType="int">
+		select count(*) from menu
+		<where>
+			<if test="name != null and name!=''">and name like CONCAT('%',#{name},'%')</if>
+			<if test="parentId != null">and parentId = #{parentId}</if>
+		</where>
+	</select>
+
+	<!-- 根据id查 -->
+	<select id="queryById" parameterType="int" resultType="Menu">
+		select * from menu where id=#{id}
+	</select>
+
+	<!-- 删除 -->
+	<delete id="delete" parameterType="int">
+        delete from menu where id = #{id}
+    </delete>
+
+	<!-- 添加 -->
+	<insert id="add" parameterType="Menu">
+        insert into menu values (null,#{name},#{menuCode},#{parentId},#{nodeType},#{iconUrl},null,#{linkUrl},#{level},null)
+    </insert>
+
+	<!-- 修改 -->
+	<update id="update" parameterType="Menu">
+        update menu set name = #{name},menuCode = #{menuCode}, parentId = #{parentId},nodeType = #{nodeType},iconUrl = #{iconUrl},linkUrl = #{linkUrl},level = #{level} where id = #{id}
+    </update>
+
+	<!-- 根据角色id查权限 -->
+	<select id="queryMenuByRoleId"  parameterType="int" resultType="Menu">
+		select m.* from menu m
+		left join authority a
+		on m.id = a.menuId
+		where a.roleId = #{id}
+	</select>
+
+	<!-- 根据角色Id删除权限 -->
+	<delete id="deleteByRoleId" parameterType="int">
+        delete from authority where id= #{id}
+    </delete>
+
+	<!-- 添加权限 -->
+	<insert id="addAuthority" parameterType="int">
+        insert into authority values (null,#{roleId},#{menuId})
+    </insert>
+</mapper>

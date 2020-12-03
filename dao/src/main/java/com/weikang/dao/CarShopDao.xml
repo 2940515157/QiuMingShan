@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weikang.dao.CarShopDao">
+
+	<resultMap id="CarShopMap" type="CarShop">
+		<association property="car" javaType="Car"
+					 column="carId" select="com.weikang.dao.CarDao.queryById"
+					 fetchType="lazy">
+		</association>
+		<association property="shop" javaType="shop"
+					 column="shopId" select="com.weikang.dao.ShopDao.queryById"
+					 fetchType="lazy">
+		</association>
+	</resultMap>
+
+	<!-- 查所有 -->
+	<select id="queryAll" parameterType="int" resultMap="CarShopMap">
+		select * from car_shop
+	</select>
+
+	<!-- 根据id查 -->
+	<select id="queryById" parameterType="int" resultMap="CarShopMap">
+		select * from car_shop where id=#{id}
+	</select>
+
+	<!-- 分页 -->
+	<select id="fenYe" parameterType="CarShop" resultMap="CarShopMap">
+		select * from car_shop
+		<where>
+			<if test="carId != null and carId != -1">and carId =#{carId}</if>
+			<if test="shopId != null and shopId !=-1 ">and shopId =#{shopId}</if>
+		</where>
+	</select>
+
+	<!-- 条数 -->
+	<select id="fenYeCount" parameterType="CarShop" resultType="int">
+		select count(*) from car_shop
+		<where>
+			<if test="carId != null and carId != -1">and carId =#{carId}</if>
+			<if test="shopId != null and shopId !=-1 ">and shopId =#{shopId}</if>
+		</where>
+	</select>
+
+	<!-- 添加 -->
+	<insert id="add" parameterType="CarShop">
+        insert into car_shop values (null,#{carId},#{shopId},#{count})
+    </insert>
+
+	<!-- 修改 -->
+	<update id="update" parameterType="CarShop">
+        update car_shop set carId=#{carId},shopId=#{shopId},count= #{count} where id = #{id}
+    </update>
+
+	<!-- 删除 -->
+	<delete id="delete" parameterType="int">
+        delete from car_shop where id = #{id}
+    </delete>
+</mapper>

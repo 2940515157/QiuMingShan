@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weikang.dao.EmployeeDao">
+
+    <select id="login" parameterType="Employee" resultType="Employee">
+		select * from employee where name =#{name} and password =#{password}
+	</select>
+
+	<!-- 分页 -->
+	<select id="fenYe" parameterType="Employee" resultType="Employee">
+		select * from employee
+		<where>
+			<if test="name != null and name!=''">and name like CONCAT('%',#{name},'%')</if>
+		</where>
+	</select>
+
+	<!-- 条数 -->
+	<select id="fenYeCount" parameterType="Employee" resultType="int">
+		select count(*) from employee
+		<where>
+			<if test="name != null and name!=''">and name like CONCAT('%',#{name},'%')</if>
+		</where>
+	</select>
+
+	<!-- 查所有 -->
+	<select id="queryAll" parameterType="int" resultType="Employee">
+		select * from employee
+	</select>
+
+	<!-- 根据id查 -->
+	<select id="queryById" parameterType="int" resultType="Employee">
+		select * from employee where id=#{id}
+	</select>
+
+	<select id="queryByName" parameterType="String" resultType="Employee">
+		select * from employee where name=#{name}
+	</select>
+
+	<!-- 添加 -->
+	<insert id="add" parameterType="Employee">
+        insert into employee values (null,#{name},#{password})
+    </insert>
+
+	<!-- 修改 -->
+	<update id="update" parameterType="Employee">
+        update employee set name = #{name},password = #{password} where id = #{id}
+    </update>
+
+	<!-- 删除 -->
+	<delete id="delete" parameterType="int">
+        delete from employee where id = #{id}
+    </delete>
+</mapper>

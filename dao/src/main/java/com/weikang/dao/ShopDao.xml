@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weikang.dao.ShopDao">
+	<!-- 查所有 -->
+	<select id="queryAll" parameterType="int" resultType="Shop">
+		select * from Shop
+	</select>
+
+	<!-- 根据id查 -->
+	<select id="queryById" parameterType="int" resultType="Shop">
+		select * from Shop where id=#{id}
+	</select>
+
+	<!-- 分页 -->
+	<select id="fenYe" parameterType="Shop" resultType="Shop">
+		select * from Shop
+		<where>
+			<if test="name != null and name!=''">and name like CONCAT('%',#{name},'%')</if>
+		</where>
+	</select>
+
+	<!-- 条数 -->
+	<select id="fenYeCount" parameterType="Shop" resultType="int">
+		select count(*) from Shop
+		<where>
+			<if test="name != null and name!=''">and name like CONCAT('%',#{name},'%')</if>
+		</where>
+	</select>
+
+	<!-- 添加 -->
+	<insert id="add" parameterType="Shop">
+        insert into Shop values (null,#{name},#{manager},#{tel},#{address})
+    </insert>
+
+	<!-- 修改 -->
+	<update id="update" parameterType="Shop">
+        update Shop set name = #{name},manager = #{manager} ,tel = #{tel},address = #{address} where id = #{id}
+    </update>
+
+	<!-- 删除 -->
+	<delete id="delete" parameterType="int">
+        delete from Shop where id = #{id}
+    </delete>
+</mapper>

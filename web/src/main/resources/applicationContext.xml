@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+        <import resource="classpath:applicationContext-service.xml"></import>
+        <import resource="classpath:applicationContext-dao.xml" />
+
+        <!-- shiro配置-->
+        <!-- 自定义Realm 或者 JdbcRealm-->
+        <bean id="myRealm" class="com.weikang.realm.MyRealm">
+               <!-- <property name="credentialsMatcher" ref="credentialsMatcher"></property>-->
+        </bean>
+
+        <!-- 安全管理器-->
+        <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+                <property name="realm" ref="myRealm"></property>
+
+                <!--注入rememberMe cookie管理器-->
+                <property name="rememberMeManager" ref="rememberMeManager"/>
+                <!-- 缓存管理器-->
+                <property name="cacheManager" ref="cacheManager"/>
+        </bean>
+
+        <!-- 过滤器工厂对象ShiroFilterFactoryBean
+         id设置的和webxml中的过滤器名字一样
+        -->
+        <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+                <property name="loginUrl" value="/login.jsp"></property>
+                <property name="unauthorizedUrl" value="/unauthorized.jsp"></property>
+                <property name="securityManager" ref="securityManager"></property>
+                <property name="filterChainDefinitions">
+                        <value>
+                                /js/**=anon
+                                /css/**=anon
+                                /fonts/**=anon
+                                /img/**=anon
+
+                                /login* = anon
+                                /userlogin.action = anon
+                                /admin* = anon
+                                /employeelogin.action = anon
+                                /**=user  <!--  user:   必须认证后才能访问的资源 或者rememberMe=true也可通过    -->
+                        </value>
+                </property>
+        </bean>
+
+        <!-- LifecycleBeanPostProcessor-->
+        <bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"></bean>
+
+       <!-- &lt;!&ndash; md5配置&ndash;&gt;
+        <bean id="credentialsMatcher" class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+                <property name="hashAlgorithmName" value="md5"></property>
+                <property name="hashIterations" value="5"></property>
+        </bean>-->
+
+        <!-- shiro  rememberMe配置-->
+        <!--手动指定cookie-->
+        <bean id="rememberMeCookie" class="org.apache.shiro.web.servlet.SimpleCookie">
+                <constructor-arg value="rememberMe"/>
+                <property name="httpOnly" value="true"/>
+                <property name="maxAge" value="604800"/><!-- 7天 -->
+        </bean>
+
+        <!-- rememberMe管理器 -->
+        <bean id="rememberMeManager"
+              class="org.apache.shiro.web.mgt.CookieRememberMeManager">
+                <!--注入自定义cookie(主要是设置寿命, 默认的一年太长)-->
+                <property name="cookie" ref="rememberMeCookie"/>
+        </bean>
+
+        <!-- 开启shiro注解支持-->
+        <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"
+              depends-on="lifecycleBeanPostProcessor" />
+
+
+        <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+                <property name="securityManager" ref="securityManager"></property>
+        </bean>
+
+        <!--定义需要特殊处理的异常，用类名或者完全路径作为key，异常页面作为值 -->
+        <!-- shiro权限异常处理-->
+        <bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+                <property name="exceptionMappings">
+                        <props>
+                                <prop key="org.apache.shiro.authz.UnauthorizedException">redirect:/unauthorized.jsp</prop>
+                        </props>
+                </property>
+        </bean>
+
+        <!-- 进行缓存的操作配置 -->
+        <bean id="cacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">
+                <property name="cacheManagerConfigFile" value="classpath:ehcache.xml"/>
+        </bean>
+</beans>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weikang.dao.CarOutDao">
+
+	<resultMap id="CarOutMap" type="CarOut">
+		<association property="car" javaType="Car"
+					 column="carId" select="com.weikang.dao.CarDao.queryById"
+					 fetchType="lazy">
+		</association>
+		<association property="shop" javaType="shop"
+					 column="shopId" select="com.weikang.dao.ShopDao.queryById"
+					 fetchType="lazy">
+		</association>
+		<association property="user" javaType="User"
+					 column="userId" select="com.weikang.dao.UserDao.queryById"
+					 fetchType="lazy">
+		</association>
+	</resultMap>
+
+	<!-- 查所有 -->
+	<select id="queryAll"  resultMap="CarOutMap">
+		select * from car_out
+	</select>
+
+	<!-- 查所有2 -->
+	<select id="queryAll2"  resultMap="CarOutMap">
+		select * from car_out where status = 1 and back=0
+	</select>
+
+	<!-- 根据id查 -->
+	<select id="queryById" parameterType="int" resultMap="CarOutMap">
+		select * from car_out where id=#{id}
+	</select>
+
+	<!-- 分页 -->
+	<select id="fenYe" parameterType="CarOut" resultMap="CarOutMap">
+		select * from car_out
+		<where>
+			<if test="userId != null and userId!=''">and userId = #{userId}</if>
+		</where>
+	</select>
+	<!-- 条数 -->
+	<select id="fenYeCount" parameterType="CarOut" resultType="int">
+		select count(*) from car_out
+		<where>
+			<if test="userId != null and userId!=''">and userId = #{userId}</if>
+		</where>
+	</select>
+
+	<!-- 分页2 -->
+	<select id="fenYe2" parameterType="CarOut" resultMap="CarOutMap">
+		select * from car_out where status = 0
+	</select>
+
+	<!-- 条数2 -->
+	<select id="fenYeCount2" parameterType="CarOut" resultType="int">
+		select count(*) from car_out where status = 0
+	</select>
+
+
+	<!-- 添加 -->
+	<insert id="add" parameterType="CarOut">
+        insert into car_out values (null,#{carId},#{userId},#{shopId},#{time},0,0)
+    </insert>
+
+	<!-- 修改 -->
+	<update id="update" parameterType="CarOut">
+        update car_out set carId=#{carId},userId=#{userId}, shopId = #{shopId},time = #{time},status= #{status} where id = #{id}
+    </update>
+
+	<!-- 删除 -->
+	<delete id="delete" parameterType="int">
+        delete from car_out where id = #{id}
+    </delete>
+
+	<update id="pz" parameterType="int">
+        update car_out set status=1 where id = #{id}
+    </update>
+
+	<update id="bpz" parameterType="int">
+        update car_out set status=2 where id = #{id}
+    </update>
+
+	<update id="back" parameterType="int">
+        update car_out set back=1 where id = #{id}
+    </update>
+</mapper>

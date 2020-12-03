@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weikang.dao.EmployeeRoleDao">
+
+	<resultMap id="EmployeeRoleMap" type="EmployeeRole">
+		<association property="employee" javaType="employee"
+					 column="employeeId" select="com.weikang.dao.EmployeeDao.queryById"
+					 fetchType="lazy">
+		</association>
+		<association property="role" javaType="role"
+					 column="roleId" select="com.weikang.dao.RoleDao.queryById"
+					 fetchType="lazy">
+		</association>
+	</resultMap>
+
+	<!-- 分页 -->
+	<select id="fenYe" parameterType="EmployeeRole" resultMap="EmployeeRoleMap">
+		select * from employee_role
+	</select>
+
+	<!-- 条数 -->
+	<select id="fenYeCount" parameterType="EmployeeRole" resultType="int">
+		select count(*) from employee_role
+	</select>
+
+	<!-- 根据id查 -->
+	<select id="queryById" parameterType="int" resultMap="EmployeeRoleMap">
+		select * from employee_role where id=#{id}
+	</select>
+
+	<!-- 添加 -->
+	<insert id="add" parameterType="EmployeeRole">
+        insert into employee_role values (null,#{employeeId},#{roleId})
+    </insert>
+
+	<!-- 修改 -->
+	<update id="update" parameterType="EmployeeRole">
+        update employee_role set employeeId = #{employeeId},roleId = #{roleId} where id = #{id}
+    </update>
+
+	<!-- 删除 -->
+	<delete id="delete" parameterType="int">
+        delete from employee_role where id = #{id}
+    </delete>
+</mapper>
